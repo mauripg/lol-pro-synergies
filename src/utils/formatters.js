@@ -25,9 +25,14 @@ export function formatPatch(rawPatch) {
   return rawPatch.replace(/^16\./, '26.');
 }
 
+export function getDDragonKey(name) {
+  if (!name) return '';
+  return DD_NAME_MAP[name] || name.replace(/[^a-zA-Z0-9]/g, '');
+}
+
 export function getChampIconUrl(name, ddragonVersion) {
   if (!name || !ddragonVersion) return '';
-  const champKey = DD_NAME_MAP[name] || name.replace(/[^a-zA-Z0-9]/g, '');
+  const champKey = getDDragonKey(name);
   return `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/champion/${champKey}.png`;
 }
 
@@ -36,4 +41,4 @@ export function getPrimaryRole(rolesObj) {
   const entries = Object.entries(rolesObj);
   if (entries.length === 0) return 'desconocido';
   return entries.sort((a, b) => b[1] - a[1])[0][0];
-}
+}
