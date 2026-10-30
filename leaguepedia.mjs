@@ -169,6 +169,24 @@ function saveCache(cache) {
   fs.writeFileSync(cachePath(cache.year), JSON.stringify(cache));
 }
 
+// Borra los archivos de años anteriores (caché o copia inicial). Cada año es independiente:
+// la página solo muestra la temporada actual, así que lo viejo solo ocuparía espacio.
+function removeOtherYears(dir, year, pattern) {
+  let removed = 0;
+  try {
+    for (const name of fs.readdirSync(dir)) {
+      const match = name.match(pattern);
+      if (match && Number(match[1]) !== year) {
+        fs.unlinkSync(path.join(dir, name));
+        removed++;
+      }
+    }
+  } catch {
+    // la carpeta no existe o no se puede limpiar: no es crítico
+  }
+  return removed;
+}
+
 // Guarda el caché actual como copia inicial en el repo (npm run data:seed).
 export function writeSeed(year = new Date().getUTCFullYear()) {
   const cache = readJson(cachePath(year));
@@ -178,7 +196,14 @@ export function writeSeed(year = new Date().getUTCFullYear()) {
   fs.mkdirSync(SEED_DIR, { recursive: true });
   const gz = zlib.gzipSync(JSON.stringify(cache), { level: 9 });
   fs.writeFileSync(seedPath(year), gz);
-  return { file: seedPath(year), rows: cache.rows.length, kb: Math.round(gz.length / 1024), until: cache.fetchedUntil };
+  const removed = removeOtherYears(SEED_DIR, year, /^leaguepedia-(\d{4})\.json\.gz$/);
+  return {
+    file: seedPath(year),
+    rows: cache.rows.length,
+    kb: Math.round(gz.length / 1024),
+    until: cache.fetchedUntil,
+    removed,
+  };
 }
 
 function toCsvRow([gameid, side, position, champion, result, patch, league]) {
@@ -239,6 +264,8 @@ export async function* fetchLeaguepediaRows({
   const tomorrow = new Date(formatDate(new Date(now.getTime() + DAY)));
   const end = new Date(Math.min(Date.UTC(year + 1, 0, 1), tomorrow.getTime()));
   const cache = loadCache(year);
+  const removed = removeOtherYears(CACHE_DIR, year, /^leaguepedia-(\d{4})\.json$/);
+  if (removed) console.log(`[Leaguepedia] Caché de ${removed} año(s) anterior(es) eliminado.`);
 
   // Sin credenciales no se puede consultar (Fandom permite ~1 consulta/min sin sesión).
   // Si hay copia inicial o caché, se usan tal cual en vez de fallar.
