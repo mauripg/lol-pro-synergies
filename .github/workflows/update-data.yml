@@ -30,7 +30,7 @@ jobs:
       - name: Descargar CSV desde Google Drive
         run: |
           pip install --upgrade gdown
-          gdown --id 1hnpbrUpBMS1TZI7IovfpKeZfWJH1Aptm -O matches.csv
+          gdown "1hnpbrUpBMS1TZI7IovfpKeZfWJH1Aptm" -O matches.csv
 
       - name: Procesar partidas y generar synergies.json
         run: node parse.mjs
