@@ -1,0 +1,5 @@
+node_modules/
+dist/
+matches.csv
+.DS_Store
+EOT
