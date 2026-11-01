@@ -1,6 +1,5 @@
 import { getChampIconUrl } from '../utils/formatters';
-
-const ROLES = ['all', 'top', 'jng', 'mid', 'bot', 'sup'];
+import { RoleButtons, MoreFilters } from './Filters';
 
 export function PopularPicks({
   popularChamps,
@@ -8,40 +7,37 @@ export function PopularPicks({
   onSelectChamp,
   roleFilter,
   onRoleFilterChange,
+  styleFilter,
+  onStyleFilterChange,
+  classFilter,
+  onClassFilterChange,
   ddragonVersion,
 }) {
   return (
     <section className="popular-section">
-      <div className="popular-header">
-        <span className="section-title">Más jugados en el filtro:</span>
-        <div className="role-buttons">
-          {ROLES.map((role) => (
-            <button
-              key={role}
-              className={`role-button ${roleFilter === role ? 'active' : ''}`}
-              onClick={() => onRoleFilterChange(role)}
-            >
-              {role === 'all' ? 'Todos' : role}
-            </button>
-          ))}
-        </div>
+      <div className="toolbar">
+        <span className="section-title">Más jugados</span>
+        <RoleButtons value={roleFilter} onChange={onRoleFilterChange} allLabel="Todos" />
+        <MoreFilters
+          id="popular-filters"
+          styleValue={styleFilter}
+          onStyleChange={onStyleFilterChange}
+          classValue={classFilter}
+          onClassChange={onClassFilterChange}
+        />
       </div>
 
       <div className="popular-grid">
         {popularChamps.length === 0 ? (
-          <div className="empty-message">Sin registros para este rol en el parche actual.</div>
+          <div className="empty-message">Sin registros con estos filtros.</div>
         ) : (
           popularChamps.map((champ) => (
             <button
               key={champ.name}
               className={`pick-card ${selectedChamp === champ.name ? 'active' : ''}`}
-              onClick={() => onSelectChamp(champ.name)}
+              onClick={() => onSelectChamp(champ.name, roleFilter === 'all' ? null : roleFilter)}
             >
-              <img
-                src={getChampIconUrl(champ.name, ddragonVersion)}
-                alt={champ.name}
-                className="pick-card-thumb"
-              />
+              <img src={getChampIconUrl(champ.name, ddragonVersion)} alt="" className="pick-card-thumb" />
               <span className="pick-card-name">{champ.name}</span>
               <span className="pick-card-games">{champ.games}p</span>
             </button>

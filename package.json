@@ -5,10 +5,15 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-  "parse": "node parse.mjs",
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
+    "data": "node parse.mjs",
+    "data:leaguepedia": "node parse.mjs --source=leaguepedia",
+    "data:seed": "node make-seed.mjs",
+    "parse": "node parse.mjs",
+    "predev": "node parse.mjs --if-missing",
+    "dev": "vite",
+    "build": "node parse.mjs && vite build",
+    "build:ui": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",

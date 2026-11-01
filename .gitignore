@@ -2,4 +2,8 @@ node_modules/
 dist/
 matches.csv
 .DS_Store
-EOT
+
+# Se genera en cada build (npm run data / npm run build)
+public/synergies.json
+drive-error.html
+.env
